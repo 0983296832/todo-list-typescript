@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
+import isDeepEqual from 'fast-deep-equal/react'
 import './App.css';
+
 import InputField from './components/Input/InputField';
 import TodoList from './components/TodoList/TodoList';
+
 import {Todo} from './model/models';
 
+
+const LOCAL_STORAGE_KEY = "TODOS";
 
 const App: React.FC =()=> {
   const [todo, setTodo] = useState<string>("")
   const [todos, setTodos] = useState<Array<Todo>>([])
-  
+  const todoRef = useRef(todos)
+
+  if (!isDeepEqual(todoRef.current, todos)) {
+    todoRef.current = todos
+    console.log(todoRef.current);
+  }
+
   const handleAddTodo = (e:React.FormEvent) => {
     e.preventDefault()
     if(todo){
@@ -16,6 +27,20 @@ const App: React.FC =()=> {
       setTodo("")
     }
   }
+
+  useEffect(() => {
+    const localStorageItem = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if(localStorageItem) {
+      const storageTodos =JSON.parse(localStorageItem);
+      setTodos(storageTodos)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
+  }, [todoRef.current])
+
+  
 
   return (
     <div className="App">
