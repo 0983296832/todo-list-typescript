@@ -1,6 +1,13 @@
-
 .App {
-  text-align: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: #2f74c0;
+  z-index: 1 !important;
 }
 
-
+.App__title {
+  text-transform: uppercase;
+}
