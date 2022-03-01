@@ -1,44 +1,36 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef, useContext} from 'react';
 import isDeepEqual from 'fast-deep-equal/react'
 import './App.css';
+import {TodoContext} from "./context/context"
 
 import InputField from './components/Input/InputField';
 import TodoList from './components/TodoList/TodoList';
 
-import {Todo} from './model/models';
+
 
 
 const LOCAL_STORAGE_KEY = "TODOS";
 
 const App: React.FC =()=> {
   const [todo, setTodo] = useState<string>("")
-  const [todos, setTodos] = useState<Array<Todo>>([])
-  const todoRef = useRef(todos)
-
-  if (!isDeepEqual(todoRef.current, todos)) {
-    todoRef.current = todos
-    console.log(todoRef.current);
+  const {state, addTodo} = useContext(TodoContext)
+  const todoRef = useRef(state)
+  
+  if (!isDeepEqual(todoRef.current, state)) {
+    todoRef.current = state
   }
 
   const handleAddTodo = (e:React.FormEvent) => {
     e.preventDefault()
     if(todo){
-      setTodos([...todos, {id:Date.now(), todo, isDone: false}])
-      setTodo("")
+      addTodo(todo)
     }
+    setTodo("")
   }
 
   useEffect(() => {
-    const localStorageItem = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if(localStorageItem) {
-      const storageTodos =JSON.parse(localStorageItem);
-      setTodos(storageTodos)
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
-  }, [todoRef.current])
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+  }, [state])
 
   
 
@@ -50,7 +42,7 @@ const App: React.FC =()=> {
      setTodo={setTodo} 
      handleAddTodo={handleAddTodo}
      />
-     <TodoList todos={todos} setTodos={setTodos}/>
+     <TodoList todos={state} />
     </div>
   );
 }

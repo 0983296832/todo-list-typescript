@@ -1,40 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import "./SingleTodo.css"
 import {MdEdit, MdDelete, MdDone} from 'react-icons/md';
 import {Todo} from '../../model/models';
+import {TodoContext} from "../../context/context"
 
 
 const SingleTodo: React.FC<{
     todo: Todo;
-    todos:Array<Todo>;
-    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
-  }>= ({todo, todos, setTodos}) => {
+  }>= ({todo}) => {
     const [edit, setEdit] = useState<boolean>(false);
     const [editTodo, setEditTodo] = useState<string>(todo.todo);
+    const { removeTodo, updateTodo, doneTodo} = useContext(TodoContext)
 
   const handleDoneTodo = (id:number)=>{
-    setTodos(
-        todos.map((todo)=>
-        todo.id===id ? {...todo, isDone: !todo.isDone} : todo
-        )
-    );
+    doneTodo(id)
   }
   const handleEditTodo = (e:React.FormEvent, id:number)=>{
     e.preventDefault();
-    setTodos(
-        todos.map((todo)=>
-        todo.id===id ? {...todo, todo:editTodo} : todo
-        )
-    );
+    updateTodo(id, editTodo)
     setEdit(!edit)
   }
 
   const handleDeleteTodo =(id:number)=>{
-    setTodos(
-        todos.filter((todo)=>
-        todo.id!==id 
-        )
-    );
+    removeTodo(id)
   }
 
   return <form className="single-todo" onSubmit={(e) =>handleEditTodo(e,todo.id)}>
